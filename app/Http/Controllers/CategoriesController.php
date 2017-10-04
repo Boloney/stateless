@@ -49,18 +49,13 @@ class CategoriesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Category $category)
     {
-        $oCategory = Category::find($id);
-        if(is_object($oCategory)) {
-            if ($oCategory->can_edit()) {
+        if (Auth::user()->can('edit', $category)) {
                 $aCategories = Category::all()->pluck('name', 'id')->all();
-                return view($this->path . 'form', compact('oCategory', 'aCategories'));
-            } else {
-                $result =  ['error' => config('constants.response.no_permissions')];
-            }
-        }else{
-            $result =  ['error' => config('constants.response.not_found')];
+                return view($this->path . 'form', compact('category', 'aCategories'));
+        } else {
+            $result =  ['error' => config('constants.response.no_permissions')];
         }
 
         return response()->json($result);
@@ -73,18 +68,13 @@ class CategoriesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(CategoryRequest $request, $id)
+    public function update(CategoryRequest $request, Category $category)
     {
-        $oCategory = Category::find($id);
-        if(is_object($oCategory)){
-            if($oCategory->can_edit()){
-                $oCategory->update($request->all());
-                $result = ['success' => config('constants.response.updated')];
-            }else{
-                $result = ['error' => config('constants.response.no_permissions')];
-            }
+        if (Auth::user()->can('edit', $category)) {
+            $category->update($request->all());
+            $result = ['success' => config('constants.response.updated')];
         }else{
-            $result =  ['error' => config('constants.response.not_found')];
+            $result = ['error' => config('constants.response.no_permissions')];
         }
 
         return response()->json($result);
@@ -96,18 +86,13 @@ class CategoriesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Category $category)
     {
-        $oCategory = Category::find($id);
-        if(is_object($oCategory)){
-            if($oCategory->can_edit()){
-                $oCategory->delete($id);
-                $result = ['success' => config('constants.response.deleted')];
-            }else{
-                $result = ['error' => config('constants.response.no_permissions')];
-            }
+        if (Auth::user()->can('edit', $category)) {
+            $category->delete();
+            $result = ['success' => config('constants.response.deleted')];
         }else{
-            $result = ['error' => config('constants.response.not_found')];
+            $result = ['error' => config('constants.response.no_permissions')];
         }
 
         return response()->json($result);

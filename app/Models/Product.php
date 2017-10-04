@@ -8,8 +8,6 @@ use Illuminate\Support\Facades\Auth;
 
 class Product extends Model
 {
-    use UserRules;
-
     protected $photoPath = 'upload/products/';
     protected $fillable = ['name', 'description', 'photo', 'photo_description', 'user_id', 'category_id'];
     protected $appends = ['short_description'];

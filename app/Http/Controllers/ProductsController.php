@@ -69,7 +69,7 @@ class ProductsController extends Controller
         if($request->hasFile('photo')){
             $request->file('photo')->move(public_path('upload/products'), $request->file('photo')->getClientOriginalName());
             $data = $request->except(['photo', 'tags']);
-            $data['photo'] = '/upload/products/' . $request->file('photo')->getClientOriginalName();
+            $data['photo'] = $request->file('photo')->getClientOriginalName();
         }else{
             $data = $request->all();
         }
@@ -89,22 +89,17 @@ class ProductsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Product $product)
     {
-        $oProduct = Product::find($id);
+        if (Auth::user()->can('edit', $product)) {
+            $aCategories = Category::all()->pluck('name', 'id')->all();
+            $aTags = Tag::all()->pluck('text', 'id')->all();
 
-        if(is_object($oProduct)){
-            if($oProduct->can_edit()){
-                $aCategories = Category::all()->pluck('name', 'id')->all();
-                $aTags = Tag::all()->pluck('text', 'id')->all();
-
-                return view($this->path . 'form', compact('oProduct', 'aCategories', 'aTags'));
-            }else{
-                $result = ['error' => config('constants.response.no_permissions')];
-            }
+            return view($this->path . 'form', compact('product', 'aCategories', 'aTags'));
         }else{
-            $result = ['error' => config('constants.response.not_found')];
+            $result = ['error' => config('constants.response.no_permissions')];
         }
+
         return response()->json($result);
     }
 
@@ -115,27 +110,22 @@ class ProductsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(ProductRequest $request, $id)
+    public function update(ProductRequest $request, Product $product)
     {
-        $oProduct = Product::find($id);
-        if(is_object($oProduct)){
-            if($oProduct->can_edit()){
-                if($request->hasFile('photo')){
-                    $request->file('photo')->move(public_path('upload/products'), $request->file('photo')->getClientOriginalName());
-                    $data = $request->except(['photo']);
-                    $data['photo'] = $request->file('photo')->getClientOriginalName();
-                }else{
-                    $data = $request->all();
-                }
-               $oProduct->update($data);
-               $oProduct->tags()->sync($request->get('tags'));
-
-               $result = ['success' => config('constants.response.updated')];
+        if (Auth::user()->can('edit', $product)) {
+            if($request->hasFile('photo')){
+                $request->file('photo')->move(public_path('upload/products'), $request->file('photo')->getClientOriginalName());
+                $data = $request->except(['photo']);
+                $data['photo'] = $request->file('photo')->getClientOriginalName();
             }else{
-                $result = ['error' => config('constants.response.no_permissions')];
+                $data = $request->all();
             }
+            $product->update($data);
+            $product->tags()->sync($request->get('tags'));
+
+            $result = ['success' => config('constants.response.updated')];
         }else{
-            $result = ['error' => config('constants.response.not_found')];
+            $result = ['error' => config('constants.response.no_permissions')];
         }
 
         return response()->json($result);
@@ -147,18 +137,13 @@ class ProductsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Product $product)
     {
-        $oProduct = Product::find($id);
-        if(is_object($oProduct)){
-            if($oProduct->can_edit()){
-                $oProduct->delete();
-                $result = ['success' => config('constants.response.deleted')];
-            }else{
-                $result = ['error' => config('constants.response.no_permissions')];
-            }
+        if (Auth::user()->can('edit', $product)) {
+            $product->delete();
+            $result = ['success' => config('constants.response.deleted')];
         }else{
-            $result = ['error' => config('constants.response.not_found')];
+            $result = ['error' => config('constants.response.no_permissions')];
         }
 
         return response()->json($result);

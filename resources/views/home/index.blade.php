@@ -38,12 +38,12 @@
 
                                             </td>
                                             <td>
-                                                @if($product->can_edit())
+                                                @can('edit', $product)
                                                     <a href="{!! route('products.edit', $product->id) !!}" class="btn btn-info">Редактировать</a>
                                                     {{ Form::open(['route' => ['products.delete', $product->id], 'method' => 'delete']) }}
                                                     <button type="submit" class="btn btn-danger">Delete</button>
                                                     {{ Form::close() }}
-                                                @endif
+                                                @endcan
                                             </td>
                                         </tr>
                                     @endforeach
@@ -72,12 +72,12 @@
                                                 <br/>
                                             </td>
                                             <td>
-                                                @if($category->can_edit())
+                                                @can('edit', $category)
                                                     <a href="{!! route('categories.edit', $category->id) !!}" class="btn btn-info">Редактировать</a>
                                                     {{ Form::open(['route' => ['categories.delete', $category->id], 'method' => 'delete']) }}
                                                     <button type="submit" class="btn btn-danger">Delete</button>
                                                     {{ Form::close() }}
-                                                @endif
+                                                @endcan
                                             </td>
                                         </tr>
                                     @endforeach

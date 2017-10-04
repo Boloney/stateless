@@ -7,8 +7,8 @@
             <div class="panel panel-default">
                 <div class="panel-body">
 
-                    @if(isset($oCategory))
-                        {!! Form::model($oCategory,['route' => ['categories.update', $oCategory->id], 'method' => 'PUT', "files" => true]) !!}
+                    @if(isset($category))
+                        {!! Form::model($category,['route' => ['categories.update', $category->id], 'method' => 'PUT', "files" => true]) !!}
                     @else
                         {!! Form::open(['route' => ['categories.store'], "files" => true ]) !!}
                     @endif

@@ -7,8 +7,8 @@
             <div class="panel panel-default">
                 <div class="panel-body">
 
-                    @if(isset($oProduct))
-                        {!! Form::model($oProduct,['route' => ['products.update', $oProduct->id], 'method' => 'PUT', "files" => true]) !!}
+                    @if(isset($product))
+                        {!! Form::model($product,['route' => ['products.update', $product->id], 'method' => 'PUT', "files" => true]) !!}
                     @else
                         {!! Form::open(['route' => ['products.store'], "files" => true ]) !!}
                     @endif
@@ -25,8 +25,8 @@
 
                     <div class="form-group">
                         <p>
-                            @if(isset($oProduct) && $oProduct->photo)
-                                <img class="src-photo" src="{!! $oProduct->getPhoto() !!}"  style="width:100px;"/>
+                            @if(isset($product) && $product->photo)
+                                <img class="src-photo" src="{!! $product->getPhoto() !!}"  style="width:100px;"/>
                             @endif
                         </p>
                         {!! Form::file("photo", ["accept" => ".jpg,.png"]) !!}
@@ -39,7 +39,7 @@
 
                     <div class="form-group">
                         <label for="tags">Тэги</label>
-                        {!! Form::select('tags[]', $aTags, isset($oProduct) ? $oProduct->tags->pluck('id')->all() : null, ['multiple' => 'multiple', 'id'=>'tags']) !!}
+                        {!! Form::select('tags[]', $aTags, isset($product) ? $product->tags->pluck('id')->all() : null, ['multiple' => 'multiple', 'id'=>'tags']) !!}
                     </div>
 
                     <div class="form-group">

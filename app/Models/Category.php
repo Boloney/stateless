@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Category extends Model
 {
-    use UserRules;
-
     protected $fillable = ['name', 'description', 'user_id', 'parent_id'];
 
     public function user()
