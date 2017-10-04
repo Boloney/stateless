@@ -29,17 +29,14 @@ class ProductsController extends Controller
 
     protected function activateFilters(Request $request, &$aProducts)
     {
-        $name = $request->get('name', null);
-        $description = $request->get('description', null);
+        $data = $request->only('name', 'description', 'photo_description');
         $tag = $request->get('tag');
 
-        if($name != ''){
-            $aProducts->where('name', 'like', '%' . $name . '%');
-        }
-
-        if($description != ''){
-            $aProducts->where('description', 'like', '%' . $description . '%');
-        }
+        $aProducts->where(function($query) use ($data) {
+            foreach ($data as $key => $value) {
+                $query->orWhere($key, 'LIKE', "%$value%");
+            }
+        });
 
         if($tag){
             $aProducts->whereHas('tags', function ($query) use ($tag) {
